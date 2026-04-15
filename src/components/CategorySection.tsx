@@ -8,7 +8,7 @@ import MenuItemCard from "./MenuItemCard";
 
 interface Props {
   category: MenuCategory;
-  layout: "classic" | "modern" | "grid";
+  layout: string;
   defaultOpen?: boolean;
 }
 

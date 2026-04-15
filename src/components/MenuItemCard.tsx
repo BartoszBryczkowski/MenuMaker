@@ -7,7 +7,7 @@ import { MenuItem } from "@/types/menu";
 
 interface Props {
   item: MenuItem;
-  layout: "classic" | "modern" | "grid";
+  layout: string;
 }
 
 export default function MenuItemCard({ item, layout }: Props) {
