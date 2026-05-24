@@ -66,7 +66,7 @@ export const mockCategories: MenuCategory[] = [
   },
   {
     id: "cat-3",
-    name: "🍝 Pasta",
+    name: "🍝 Makarony",
     items: [
       {
         id: "pa1",

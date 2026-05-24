@@ -66,7 +66,6 @@ export default function CategorySection({
         </span>
       </button>
 
-      {/* Divider */}
       <div
         className="mb-4 h-0.5"
         style={{
@@ -74,7 +73,6 @@ export default function CategorySection({
         }}
       />
 
-      {/* Items */}
       <animated.div style={{ ...contentSpring, overflow: "hidden" }}>
         <div
           className={

@@ -13,16 +13,14 @@ import ThemeSwitcher from "@/components/ThemeSwitcher";
 export default function MenuPage() {
   const { theme, cssVars } = useTheme();
 
-  // Domyślnie pusty — wypełniane z backendu
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Symulacja fetcha z API
     const timer = setTimeout(() => {
       setCategories(mockCategories); // <- zamienić na fetch z API
       setLoading(false);
-    }, 600);
+    }, 10);
     return () => clearTimeout(timer);
   }, []);
 
@@ -33,8 +31,8 @@ export default function MenuPage() {
     >
       <div className="mx-auto max-w-4xl px-4">
         <Header
-          restaurantName="La Cucina"
-          subtitle="Authentic Italian Kitchen"
+          restaurantName="La Pizzeria"
+          subtitle="Mała włoska restauracja"
         />
 
         {loading ? (

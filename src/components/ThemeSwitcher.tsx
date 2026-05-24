@@ -7,8 +7,8 @@ import { useState } from "react";
 
 const colorSchemes = {
   classic: { label: "☀️ Zwykły", colors: "warm" },
-  modern: { label: "🌙 Modern", colors: "dark" },
-  grid: { label: "💜 Grid", colors: "purple" },
+  modern: { label: "🌙 Ciemny", colors: "dark" },
+  grid: { label: "💜 Nowoczesny", colors: "purple" },
 };
 
 const layouts = {
