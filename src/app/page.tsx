@@ -18,7 +18,7 @@ export default function MenuPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setCategories(mockCategories); // <- zamienić na fetch z API
+      setCategories(mockCategories); //tu fetch
       setLoading(false);
     }, 10);
     return () => clearTimeout(timer);
