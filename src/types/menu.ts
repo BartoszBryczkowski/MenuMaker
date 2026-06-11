@@ -16,7 +16,6 @@ export interface MenuCategory {
   items: MenuItem[];
 }
 
-// src/types/menu.ts  (dodaj pole colorScheme)
 export interface ThemeConfig {
   primary: string;
   secondary: string;

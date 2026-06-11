@@ -18,7 +18,7 @@ const layouts = {
 };
 
 export default function ThemeSwitcher() {
-  const { presetNames, applyPreset, theme, setTheme } = useTheme();
+  const { presetNames, applyPreset, theme } = useTheme();
   const [open, setOpen] = useState(false);
 
   const panelSpring = useSpring({
@@ -26,14 +26,6 @@ export default function ThemeSwitcher() {
     opacity: open ? 1 : 0,
     config: { tension: 260, friction: 24 },
   });
-
-  const handleColorChange = (name: string) => {
-    applyPreset(name, "color");
-  };
-
-  const handleLayoutChange = (name: string) => {
-    applyPreset(name, "layout");
-  };
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
@@ -54,7 +46,6 @@ export default function ThemeSwitcher() {
               minWidth: 220,
             }}
           >
-            {/* Header */}
             <div
               className="px-4 py-3 text-xs font-bold uppercase tracking-widest"
               style={{
@@ -66,7 +57,6 @@ export default function ThemeSwitcher() {
               Wybór motywu
             </div>
 
-            {/* Color Section */}
             <div className="px-4 pt-3 pb-1">
               <span
                 className="mb-2 block text-[11px] font-semibold uppercase tracking-wider"
@@ -79,10 +69,11 @@ export default function ThemeSwitcher() {
                   const scheme =
                     colorSchemes[name as keyof typeof colorSchemes];
                   const isActive = theme.colorScheme === name;
+
                   return (
                     <button
                       key={`color-${name}`}
-                      onClick={() => handleColorChange(name)}
+                      onClick={() => applyPreset(name, "color")}
                       className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98]"
                       style={{
                         background: isActive
@@ -106,7 +97,6 @@ export default function ThemeSwitcher() {
               </div>
             </div>
 
-            {/* Divider */}
             <div
               className="mx-4 my-2"
               style={{
@@ -116,7 +106,6 @@ export default function ThemeSwitcher() {
               }}
             />
 
-            {/* Layout Section */}
             <div className="px-4 pt-1 pb-3">
               <span
                 className="mb-2 block text-[11px] font-semibold uppercase tracking-wider"
@@ -128,10 +117,11 @@ export default function ThemeSwitcher() {
                 {presetNames.map((name) => {
                   const layoutInfo = layouts[name as keyof typeof layouts];
                   const isActive = theme.layout === name;
+
                   return (
                     <button
                       key={`layout-${name}`}
-                      onClick={() => handleLayoutChange(name)}
+                      onClick={() => applyPreset(name, "layout")}
                       className="flex flex-1 flex-col items-center gap-1 rounded-md px-2 py-2.5 text-xs font-medium transition-all hover:scale-[1.03] active:scale-[0.97]"
                       style={{
                         background: isActive

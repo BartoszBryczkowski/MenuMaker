@@ -177,7 +177,7 @@ export default function MenuItemCard({ item, layout }: Props) {
                 // future: add to order
               }}
             >
-              Dodaj do zamówienia
+              Zamów do stolika
             </button>
           )}
         </div>

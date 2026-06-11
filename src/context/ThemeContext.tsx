@@ -1,4 +1,3 @@
-// src/context/ThemeContext.tsx
 "use client";
 
 import {
@@ -7,6 +6,7 @@ import {
   useState,
   ReactNode,
   useMemo,
+  useEffect,
   CSSProperties,
 } from "react";
 import { ThemeConfig } from "@/types/menu";
@@ -52,25 +52,58 @@ const presets: Record<string, ThemeConfig> = {
 
 interface ThemeContextType {
   theme: ThemeConfig;
-  setTheme: (t: ThemeConfig) => void;
-  applyPreset: (name: string, mode?: "all" | "color" | "layout") => void;
+  setTheme: (t: ThemeConfig) => Promise<void>;
+  applyPreset: (
+    name: string,
+    mode?: "all" | "color" | "layout",
+  ) => Promise<void>;
   presetNames: string[];
   cssVars: CSSProperties;
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<ThemeConfig>(presets.classic);
+export function ThemeProvider({
+  children,
+  slug,
+}: {
+  children: ReactNode;
+  slug?: string;
+}) {
+  const [theme, setThemeState] = useState<ThemeConfig>(presets.classic);
 
-  const applyPreset = (
+  useEffect(() => {
+    if (!slug) return;
+
+    const loadTheme = async () => {
+      try {
+        const res = await fetch(`/api/users/${slug}`);
+        if (!res.ok) return;
+
+        const user = await res.json();
+        if (user?.theme && typeof user.theme === "object") {
+          setThemeState(user.theme as ThemeConfig);
+        }
+      } catch (error) {
+        console.error("Nie udało się pobrać theme", error);
+      }
+    };
+
+    loadTheme();
+  }, [slug]);
+
+  const setTheme = async (nextTheme: ThemeConfig) => {
+    setThemeState(nextTheme);
+  };
+
+  const applyPreset = async (
     name: string,
     mode: "all" | "color" | "layout" = "all",
   ) => {
     const preset = presets[name];
     if (!preset) return;
 
-    setTheme((prev) => {
+    setThemeState((prev) => {
       if (mode === "color") {
         return {
           ...prev,
@@ -85,27 +118,35 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           colorScheme: name,
         };
       }
+
       if (mode === "layout") {
         return { ...prev, layout: name };
       }
+
       return { ...preset };
     });
   };
 
   const cssVars = useMemo(
-    () =>
-      ({
-        "--color-primary": theme.primary,
-        "--color-secondary": theme.secondary,
-        "--color-accent": theme.accent,
-        "--color-bg": theme.background,
-        "--color-surface": theme.surface,
-        "--color-text": theme.text,
-        "--color-text-secondary": theme.textSecondary,
-        "--radius": theme.borderRadius,
-      }) as CSSProperties,
+    () => ({
+      "--color-primary": theme.primary,
+      "--color-secondary": theme.secondary,
+      "--color-accent": theme.accent,
+      "--color-bg": theme.background,
+      "--color-surface": theme.surface,
+      "--color-text": theme.text,
+      "--color-text-secondary": theme.textSecondary,
+      "--radius": theme.borderRadius,
+    }),
     [theme],
   );
+
+  useEffect(() => {
+    const root = document.documentElement;
+    Object.entries(cssVars).forEach(([key, value]) => {
+      root.style.setProperty(key, value as string);
+    });
+  }, [cssVars]);
 
   return (
     <ThemeContext.Provider
@@ -114,7 +155,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setTheme,
         applyPreset,
         presetNames: Object.keys(presets),
-        cssVars,
+        cssVars: cssVars as CSSProperties,
       }}
     >
       {children}
