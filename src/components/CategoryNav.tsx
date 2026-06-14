@@ -1,4 +1,3 @@
-// src/components/CategoryNav.tsx
 "use client";
 
 import { MenuCategory } from "@/types/menu";

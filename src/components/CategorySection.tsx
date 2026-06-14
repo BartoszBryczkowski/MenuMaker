@@ -1,4 +1,3 @@
-// src/components/CategorySection.tsx
 "use client";
 
 import { useState } from "react";
@@ -43,7 +42,6 @@ export default function CategorySection({
 
   return (
     <section className="mb-6">
-      {/* Category header */}
       <button
         onClick={() => setOpen((o) => !o)}
         className="group flex w-full items-center gap-3 py-3 text-left"
@@ -82,7 +80,11 @@ export default function CategorySection({
           }
         >
           {trail.map((style, i) => (
-            <animated.div key={category.items[i].id} style={style}>
+                        <animated.div
+              key={category.items[i].id}
+              style={style}
+              className={isGrid ? "h-full" : ""}
+            >
               <MenuItemCard item={category.items[i]} layout={layout} />
             </animated.div>
           ))}

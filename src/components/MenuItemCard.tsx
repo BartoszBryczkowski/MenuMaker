@@ -1,4 +1,3 @@
-// src/components/MenuItemCard.tsx
 "use client";
 
 import { useState } from "react";
@@ -12,10 +11,11 @@ interface Props {
 
 export default function MenuItemCard({ item, layout }: Props) {
   const [expanded, setExpanded] = useState(false);
-
+  const isGrid = layout === "grid";
+  const canExpand = !isGrid; // w gridzie nie rozwijamy
   const expandSpring = useSpring({
-    maxHeight: expanded ? 300 : 0,
-    opacity: expanded ? 1 : 0,
+    maxHeight: expanded && canExpand ? 300 : 0,
+    opacity: expanded && canExpand ? 1 : 0,
     config: { tension: 220, friction: 22 },
   });
 
@@ -26,14 +26,13 @@ export default function MenuItemCard({ item, layout }: Props) {
   });
 
   const scaleSpring = useSpring({
-    transform: expanded ? "scale(1.02)" : "scale(1)",
-    boxShadow: expanded
-      ? "0 8px 30px rgba(0,0,0,0.15)"
-      : "0 2px 8px rgba(0,0,0,0.06)",
+    transform: expanded && canExpand ? "scale(1.02)" : "scale(1)",
+    boxShadow:
+      expanded && canExpand
+        ? "0 8px 30px rgba(0,0,0,0.15)"
+        : "0 2px 8px rgba(0,0,0,0.06)",
     config: { tension: 300, friction: 20 },
   });
-
-  const isGrid = layout === "grid";
 
   return (
     <animated.div
@@ -44,21 +43,26 @@ export default function MenuItemCard({ item, layout }: Props) {
         borderRadius: "var(--radius)",
         color: "var(--color-text)",
       }}
-      className={`cursor-pointer overflow-hidden transition-colors ${
-        isGrid ? "flex flex-col" : ""
+      className={`overflow-hidden transition-colors ${
+        isGrid ? "flex h-full flex-col" : "cursor-pointer"
       } ${!item.available ? "opacity-50 grayscale" : ""}`}
-      onClick={() => item.available && setExpanded((e) => !e)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          item.available && setExpanded((prev) => !prev);
-        }
-      }}
-      aria-expanded={expanded}
+      onClick={
+        canExpand ? () => item.available && setExpanded((e) => !e) : undefined
+      }
+      role={canExpand ? "button" : undefined}
+      tabIndex={canExpand ? 0 : undefined}
+      onKeyDown={
+        canExpand
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                item.available && setExpanded((prev) => !prev);
+              }
+            }
+          : undefined
+      }
+      aria-expanded={canExpand ? expanded : undefined}
     >
-      {/* Image for grid/modern layouts */}
       {item.image && (isGrid || layout === "modern") && (
         <div className="relative h-40 w-full overflow-hidden">
           <img
@@ -74,8 +78,11 @@ export default function MenuItemCard({ item, layout }: Props) {
         </div>
       )}
 
-      {/* Main row */}
-      <div className="flex items-start justify-between gap-4 p-4">
+      <div
+        className={`flex items-start justify-between gap-4 p-4 ${
+          isGrid ? "flex-1" : ""
+        }`}
+      >
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h3 className="text-lg font-semibold">{item.name}</h3>
@@ -89,7 +96,7 @@ export default function MenuItemCard({ item, layout }: Props) {
             )}
           </div>
 
-          {layout === "classic" && (
+          {(layout === "classic" || isGrid) && (
             <p
               className="mt-1 line-clamp-2 text-sm"
               style={{ color: "var(--color-text-secondary)" }}
@@ -97,8 +104,6 @@ export default function MenuItemCard({ item, layout }: Props) {
               {item.description}
             </p>
           )}
-
-          {/* Tags */}
           {item.tags && item.tags.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
               {item.tags.map((tag) => (
@@ -126,19 +131,20 @@ export default function MenuItemCard({ item, layout }: Props) {
           >
             {item.price.toFixed(2)} zł
           </span>
-          <span
-            className="text-xs transition-transform duration-200"
-            style={{
-              transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
-              color: "var(--color-text-secondary)",
-            }}
-          >
-            ▼
-          </span>
+{canExpand && (
+           <span
+              className="text-xs transition-transform duration-200"
+              style={{
+                transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
+                color: "var(--color-text-secondary)",
+              }}
+            >
+              ▼
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Expanded details */}
       <animated.div
         style={{
           ...expandSpring,
@@ -171,10 +177,10 @@ export default function MenuItemCard({ item, layout }: Props) {
               style={{
                 background: "var(--color-accent)",
                 borderRadius: "var(--radius)",
+                cursor: "pointer",
               }}
               onClick={(e) => {
                 e.stopPropagation();
-                // future: add to order
               }}
             >
               Zamów do stolika

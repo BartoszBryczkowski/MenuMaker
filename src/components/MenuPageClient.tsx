@@ -28,11 +28,7 @@ export default function MenuPageClient({ user }: { user: PublicUser }) {
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-
-  const pathname = usePathname().slice(1);
   const { theme, cssVars, setTheme } = useTheme();
-  console.log("theme=", theme);
-  console.log("usertheme=", user.theme);
   const handleToggleEdit = async () => {
     if (!editMode) {
       setEditMode(true);
@@ -87,7 +83,6 @@ export default function MenuPageClient({ user }: { user: PublicUser }) {
       setLoggingOut(false);
     }
   };
-  const layout = user.theme?.layout ?? "classic";
   useEffect(() => {
     if (user.theme) {
       setTheme(user.theme as ThemeConfig);

@@ -1,4 +1,3 @@
-// src/components/editor/EditableCategory.tsx
 "use client";
 
 import { useState } from "react";
@@ -43,7 +42,6 @@ export default function EditableCategory({
     data: { type: "category" },
   });
 
-  // Droppable strefa dla itemów (umożliwia upuszczenie do pustej kategorii)
   const { setNodeRef: setDropRef, isOver } = useDroppable({
     id: `cat-drop-${category.id}`,
     data: { type: "category-dropzone", categoryId: category.id },

@@ -1,4 +1,3 @@
-// src/components/editor/EditableItem.tsx
 "use client";
 
 import { useSortable } from "@dnd-kit/sortable";

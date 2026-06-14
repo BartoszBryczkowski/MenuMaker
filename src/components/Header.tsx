@@ -1,4 +1,3 @@
-// src/components/Header.tsx
 "use client";
 
 import { useSpring, animated } from "@react-spring/web";

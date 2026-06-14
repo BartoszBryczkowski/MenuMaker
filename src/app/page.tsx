@@ -44,7 +44,6 @@ export default function LoginForm() {
       style={{ background: "var(--color-bg)" }}
     >
       <div className="w-full max-w-md">
-        {/* Logo / Brand */}
         <div className="flex flex-col items-center mb-8">
           <div
             className="flex items-center justify-center w-16 h-16 mb-4 text-2xl font-bold text-white"
@@ -73,7 +72,6 @@ export default function LoginForm() {
           </p>
         </div>
 
-        {/* Card */}
         <form
           onSubmit={handleLogin}
           className="flex flex-col gap-5 p-8 backdrop-blur-sm"
@@ -103,7 +101,6 @@ export default function LoginForm() {
             </p>
           </div>
 
-          {/* Email */}
           <div className="flex flex-col gap-1.5">
             <label
               className="text-xs font-medium uppercase tracking-wide"
@@ -139,7 +136,6 @@ export default function LoginForm() {
             />
           </div>
 
-          {/* Password */}
           <div className="flex flex-col gap-1.5">
             <label
               className="text-xs font-medium uppercase tracking-wide"
