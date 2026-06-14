@@ -2,8 +2,16 @@
 
 import { useEffect, useState } from "react";
 
+type AuthState = {
+  isAuthenticated: boolean;
+  slug: string | null;
+};
+
 export function useAuth() {
-  const [authenticated, setAuthenticated] = useState<boolean | null>(null);
+  const [state, setState] = useState<AuthState>({
+    isAuthenticated: false,
+    slug: null,
+  });
 
   useEffect(() => {
     let alive = true;
@@ -11,13 +19,23 @@ export function useAuth() {
     fetch("/api/auth/me", {
       credentials: "include",
     })
-      .then((res) => {
+      .then(async (res) => {
         if (!alive) return;
-        setAuthenticated(res.ok);
+
+        if (!res.ok) {
+          setState({ isAuthenticated: false, slug: null });
+          return;
+        }
+
+        const data = await res.json();
+        setState({
+          isAuthenticated: true,
+          slug: data?.user?.slug ?? null,
+        });
       })
       .catch(() => {
         if (!alive) return;
-        setAuthenticated(false);
+        setState({ isAuthenticated: false, slug: null });
       });
 
     return () => {
@@ -25,5 +43,5 @@ export function useAuth() {
     };
   }, []);
 
-  return authenticated;
+  return state;
 }

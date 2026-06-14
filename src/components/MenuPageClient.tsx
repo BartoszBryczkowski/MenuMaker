@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { MenuCategory } from "@/types/menu";
 import Header from "@/components/Header";
@@ -10,15 +10,12 @@ import CategorySection from "@/components/CategorySection";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import MenuEditor from "@/components/editor/MenuEditor";
 import { useAuth } from "@/hooks/useAuth";
-
-type PublicTheme = {
-  layout?: string;
-  [key: string]: unknown;
-};
+import { usePathname } from "next/navigation";
+import { ThemeConfig } from "@/types/menu";
 
 type PublicUser = {
   slug: string;
-  theme: PublicTheme | null;
+  theme: ThemeConfig | null;
   menu: MenuCategory[];
   restaurantName: string | null;
   subtitle?: string | null;
@@ -26,13 +23,16 @@ type PublicUser = {
 
 export default function MenuPageClient({ user }: { user: PublicUser }) {
   const router = useRouter();
-  const { theme, cssVars } = useTheme();
-  const isAuthenticated = useAuth();
+  const { isAuthenticated, slug } = useAuth();
   const [categories, setCategories] = useState<MenuCategory[]>(user.menu ?? []);
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
+  const pathname = usePathname().slice(1);
+  const { theme, cssVars, setTheme } = useTheme();
+  console.log("theme=", theme);
+  console.log("usertheme=", user.theme);
   const handleToggleEdit = async () => {
     if (!editMode) {
       setEditMode(true);
@@ -88,6 +88,11 @@ export default function MenuPageClient({ user }: { user: PublicUser }) {
     }
   };
   const layout = user.theme?.layout ?? "classic";
+  useEffect(() => {
+    if (user.theme) {
+      setTheme(user.theme as ThemeConfig);
+    }
+  }, []);
   return (
     <div
       style={cssVars}
@@ -99,9 +104,22 @@ export default function MenuPageClient({ user }: { user: PublicUser }) {
           subtitle={user.subtitle || "Twoje publiczne menu"}
         />
 
-        <div className="flex justify-end gap-3 py-2">
-          {isAuthenticated && (
-            <>
+        <div className="flex justify-between gap-3 py-2">
+          <button
+            onClick={() => router.push("/")}
+            className="px-4 py-2 text-sm font-medium transition-all hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50"
+            style={{
+              background: "var(--color-surface)",
+              color: "var(--color-text)",
+              borderRadius: "var(--radius)",
+              border:
+                "1px solid color-mix(in srgb, var(--color-text) 10%, transparent)",
+            }}
+          >
+            Strona główna
+          </button>
+          {slug === user.slug && isAuthenticated && (
+            <div className="flex gap-2">
               <button
                 onClick={handleToggleEdit}
                 disabled={saving || loggingOut}
@@ -137,7 +155,7 @@ export default function MenuPageClient({ user }: { user: PublicUser }) {
               >
                 {loggingOut ? "Wylogowywanie..." : "Wyloguj"}
               </button>
-            </>
+            </div>
           )}
         </div>
 
@@ -165,7 +183,7 @@ export default function MenuPageClient({ user }: { user: PublicUser }) {
                 <div key={cat.id} id={cat.id}>
                   <CategorySection
                     category={cat}
-                    layout={(user.theme?.layout as string) ?? theme.layout}
+                    layout={theme.layout ?? "classic"}
                     defaultOpen={index < 2}
                   />
                 </div>

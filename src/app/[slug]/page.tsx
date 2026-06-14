@@ -1,12 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import MenuPageClient from "./MenuPageClient";
-import type { MenuCategory } from "@/types/menu";
-
-type PublicTheme = {
-  layout?: string;
-  [key: string]: unknown;
-};
+import MenuPageClient from "@/components/MenuPageClient";
 
 export default async function Page({
   params,
@@ -32,10 +26,10 @@ export default async function Page({
 
   const theme =
     user.theme && typeof user.theme === "object" && !Array.isArray(user.theme)
-      ? (user.theme as PublicTheme)
+      ? (user.theme as any)
       : null;
 
-  const menu = Array.isArray(user.menu) ? (user.menu as MenuCategory[]) : [];
+  const menu = Array.isArray(user.menu) ? (user.menu as any[]) : [];
 
   return (
     <MenuPageClient

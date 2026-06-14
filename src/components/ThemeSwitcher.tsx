@@ -1,14 +1,14 @@
-// src/components/ThemeSwitcher.tsx
 "use client";
 
 import { useTheme } from "@/context/ThemeContext";
+import { useAuth } from "@/hooks/useAuth";
 import { useSpring, animated } from "@react-spring/web";
 import { useState } from "react";
 
 const colorSchemes = {
-  classic: { label: "☀️ Zwykły", colors: "warm" },
-  modern: { label: "🌙 Ciemny", colors: "dark" },
-  grid: { label: "💜 Nowoczesny", colors: "purple" },
+  classic: { label: "☀️ Zwykły" },
+  modern: { label: "🌙 Ciemny" },
+  grid: { label: "💜 Nowoczesny" },
 };
 
 const layouts = {
@@ -19,6 +19,7 @@ const layouts = {
 
 export default function ThemeSwitcher() {
   const { presetNames, applyPreset, theme } = useTheme();
+  const { isAuthenticated, slug } = useAuth();
   const [open, setOpen] = useState(false);
 
   const panelSpring = useSpring({
@@ -26,6 +27,42 @@ export default function ThemeSwitcher() {
     opacity: open ? 1 : 0,
     config: { tension: 260, friction: 24 },
   });
+
+  const saveTheme = async (nextTheme: typeof theme) => {
+    if (!isAuthenticated || !slug) return;
+
+    await fetch(`/api/users/${slug}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        theme: nextTheme,
+      }),
+    });
+  };
+
+  const handleColorPreset = async (name: string) => {
+    applyPreset(name, "color");
+
+    const nextTheme = {
+      ...theme,
+      colorScheme: name,
+    };
+
+    await saveTheme(nextTheme);
+  };
+
+  const handleLayoutPreset = async (name: string) => {
+    applyPreset(name, "layout");
+
+    const nextTheme = {
+      ...theme,
+      layout: name,
+    };
+
+    await saveTheme(nextTheme);
+  };
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
@@ -73,7 +110,7 @@ export default function ThemeSwitcher() {
                   return (
                     <button
                       key={`color-${name}`}
-                      onClick={() => applyPreset(name, "color")}
+                      onClick={() => handleColorPreset(name)}
                       className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98]"
                       style={{
                         background: isActive
@@ -121,7 +158,7 @@ export default function ThemeSwitcher() {
                   return (
                     <button
                       key={`layout-${name}`}
-                      onClick={() => applyPreset(name, "layout")}
+                      onClick={() => handleLayoutPreset(name)}
                       className="flex flex-1 flex-col items-center gap-1 rounded-md px-2 py-2.5 text-xs font-medium transition-all hover:scale-[1.03] active:scale-[0.97]"
                       style={{
                         background: isActive
